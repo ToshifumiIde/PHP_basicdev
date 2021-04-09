@@ -38,23 +38,8 @@ include("../app/_parts/_header.php");
     <?php endif; ?>
   </ul>
 
-<form action="result.php" method="get">
-  <!-- <input type="text" name="message"> -->
-  <!-- <input type="text" name="username"> -->
-      <!-- <textarea name="message" id="" cols="30" rows="10"></textarea> -->
-      <!-- <select name="colors[]" multiple>
-        <option value="orange">Orange</option>
-        <option value="pink">Pink</option>
-        <option value="gold">Gold</option>
-      </select> -->
-      <!-- <label for=""><input type="checkbox" name="colors[]" value="orange">Orange</label>
-      <label for=""><input type="checkbox" name="colors[]" value="pink">Pink</label>
-      <label for=""><input type="checkbox" name="colors[]" value="gold">Gold</label> -->
-      <label for=""><input type="radio" name="color" value="orange">Orange</label>
-      <label for=""><input type="radio" name="color" value="pink">Pink</label>
-      <label for=""><input type="radio" name="color" value="gold">Gold</label>
-  <button>SEND</button>
-  <a href="reset.php">[reset]</a>
+<form action="result.php" method="post">
+  <button>Post</button>
 </form>
 
   <?php include("../app/_parts/_footer.php");

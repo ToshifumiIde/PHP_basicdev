@@ -6,39 +6,37 @@ $names = [
   "Saburo"
 ];
 
-//result.phpにて作成した setcookie()で引き継いだcolorの情報を、filter_input()を用いて取得する
+//result.phpにて作成した setcookie()で引き継いだcolorの情報を、filter_input()を用いて取得する//
 // $color = filter_input(INPUT_COOKIE , "color") ?? "transparent";
 //null合体演算子を使用する。ただ、ページが増えるたびにこのコードをページ毎に書くのは面倒。よってheaderに移動させる。
 
+$filename = "../app/messages.txt";
+//ファイルもそのまま格納可能
+$messages = file($filename , FILE_IGNORE_NEW_LINES);
+//file()関数を用いて中身を配列で取得する。ここの改行は無視したいので、第二引数にはFILE_IGNORE_NEW_LINESを渡す。
+//こうすると、配列を取得可能になる
 
 
 require("../app/functions.php");
 include("../app/_parts/_header.php");
 ?>
 
-  <p>Hello, <?= htmlspecialchars($names[1],ENT_QUOTES,"UTF-8")?></p>
-  <p>Hello, <?= h($names[0])?></p>
-  <p>Today: 
-    <?php echo date("Y-m-d H:i:s l");
-    ?>
-  </p>
-  <p>Today: 
-    <?= date("Y-m-d H:i:s l");
-    ?>
-  </p>
-  <ul>
-<?php if(empty($names)):?>
-  <li>Nobody</li>
-<?php else: ?>
-    <?php foreach($names as $name): ?>
-    <li>
-      <?= h($name); ?>
-    </li>
-    <?php endforeach; ?>
-    <?php endif; ?>
-  </ul>
+<ul>
+<?php
+foreach($messages as $message):
+
+?>
+<li>
+<?= h($message);?>
+</li>
+
+<?php
+endforeach;
+?>
+</ul>
 
 <form action="result.php" method="post">
+<input type="text" name="message">
   <button>Post</button>
 </form>
 

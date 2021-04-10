@@ -1,5 +1,9 @@
 <?php
 require("../app/functions.php");
+//function.phpの呼び出し
+
+createToken();
+
 
 // $today = date("Y-m-d H:i:s l");
 $names = [
@@ -18,6 +22,7 @@ define("FILENAME" , "../app/messages.txt");
 //messageがpostされず直接result.phpにアクセスされるとemssages.txtには「...」のデータが追加されてしまう。
 //それを回避するために、以下のif文で条件分岐する。
 if($_SERVER["REQUEST_METHOD"] === "POST"){
+  validateToken();
   $message = trim(filter_input(INPUT_POST , "message"));
   //index.phpのinputから送信されたname="message"のデータを取得する
   //trim()関数で前後の余計な空白を取り除き、filter_input()関数でデータを取得する。
@@ -56,8 +61,9 @@ include("../app/_parts/_header.php");
   method="post"
   >
   <!-- データ処理もindex.phpにて実行する場合、action属性はindex.phpまたは""空でもOK -->
-<input type="text" name="message">
+  <input type="text" name="message">
   <button>Post</button>
+  <input type="hidden" name="token" value="<?= h($_SESSION["token"]); ?>">
 </form>
 
   <?php include("../app/_parts/_footer.php");

@@ -1,14 +1,11 @@
 <?php
 
-
-
 function h($str)
 {
   return htmlspecialchars($str,ENT_QUOTES,"UTF-8");
 }
 
-function createToken()
-{
+function createToken(){
   if(!isset($_SESSION["token"])){
     $_SESSION["token"] = bin2hex(random_bytes(32));
     //tokenが存在しなかった場合、randomで32bytesの文字列をtokenに格納する
@@ -17,13 +14,10 @@ function createToken()
   }
 }
 
-function validateToken()
-{
+function validateToken(){
   if(
-    empty(
-      $_SESSION["token"] || 
-      $_SESSION["token"] !== filter_input(INPUT_POST, "token")
-    )
+    empty($_SESSION["token"]) || 
+    $_SESSION["token"] !== filter_input(INPUT_POST, "token")
   ){
     exit("Invalid post request");
   }

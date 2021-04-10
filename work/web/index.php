@@ -1,4 +1,10 @@
 <?php
+require("../app/functions.php");
+//function.phpの呼び出し
+
+createToken();
+
+
 // $today = date("Y-m-d H:i:s l");
 $names = [
   "Taro",
@@ -6,55 +12,58 @@ $names = [
   "Saburo"
 ];
 
-//result.phpにて作成した setcookie()で引き継いだcolorの情報を、filter_input()を用いて取得する
+define("FILENAME" , "../app/messages.txt");
+
+//result.phpにて作成した setcookie()で引き継いだcolorの情報を、filter_input()を用いて取得する//
 // $color = filter_input(INPUT_COOKIE , "color") ?? "transparent";
 //null合体演算子を使用する。ただ、ページが増えるたびにこのコードをページ毎に書くのは面倒。よってheaderに移動させる。
 
 
+//messageがpostされず直接result.phpにアクセスされるとemssages.txtには「...」のデータが追加されてしまう。
+//それを回避するために、以下のif文で条件分岐する。
+if($_SERVER["REQUEST_METHOD"] === "POST"){
+  validateToken();
+  $message = trim(filter_input(INPUT_POST , "message"));
+  //index.phpのinputから送信されたname="message"のデータを取得する
+  //trim()関数で前後の余計な空白を取り除き、filter_input()関数でデータを取得する。
+  $message = $message !=="" ? $message : "...";
+  //三項演算子にて入力が空白だった場合、"..."を表示させる。
+  
+  $fp =fopen(FILENAME , "a");
+  fwrite($fp, $message . "\n");
+  fclose($fp);
 
-require("../app/functions.php");
+  header("Location: http://localhost:8080/result.php");
+  exit;
+} 
+// else {
+//   exit("Invalid access");
+//   //以降の処理は実行されなくなる。JSのreturnと似たようなもの
+// }
+
+//ファイルもそのまま格納可能
+$messages = file(FILENAME , FILE_IGNORE_NEW_LINES);
+//file()関数を用いて中身を配列で取得する。ここの改行は無視したいので、第二引数にはFILE_IGNORE_NEW_LINESを渡す。
+//こうすると、配列を取得可能になる
+
+
 include("../app/_parts/_header.php");
 ?>
 
-  <p>Hello, <?= htmlspecialchars($names[1],ENT_QUOTES,"UTF-8")?></p>
-  <p>Hello, <?= h($names[0])?></p>
-  <p>Today: 
-    <?php echo date("Y-m-d H:i:s l");
-    ?>
-  </p>
-  <p>Today: 
-    <?= date("Y-m-d H:i:s l");
-    ?>
-  </p>
-  <ul>
-<?php if(empty($names)):?>
-  <li>Nobody</li>
-<?php else: ?>
-    <?php foreach($names as $name): ?>
-    <li>
-      <?= h($name); ?>
-    </li>
-    <?php endforeach; ?>
-    <?php endif; ?>
-  </ul>
+<ul>
+<?php foreach($messages as $message):?>
+<li><?= h($message);?></li>
+<?php endforeach;?>
+</ul>
 
-<form action="result.php" method="get">
-  <!-- <input type="text" name="message"> -->
-  <!-- <input type="text" name="username"> -->
-      <!-- <textarea name="message" id="" cols="30" rows="10"></textarea> -->
-      <!-- <select name="colors[]" multiple>
-        <option value="orange">Orange</option>
-        <option value="pink">Pink</option>
-        <option value="gold">Gold</option>
-      </select> -->
-      <!-- <label for=""><input type="checkbox" name="colors[]" value="orange">Orange</label>
-      <label for=""><input type="checkbox" name="colors[]" value="pink">Pink</label>
-      <label for=""><input type="checkbox" name="colors[]" value="gold">Gold</label> -->
-      <label for=""><input type="radio" name="color" value="orange">Orange</label>
-      <label for=""><input type="radio" name="color" value="pink">Pink</label>
-      <label for=""><input type="radio" name="color" value="gold">Gold</label>
-  <button>SEND</button>
-  <a href="reset.php">[reset]</a>
+<form 
+  action="" 
+  method="post"
+  >
+  <!-- データ処理もindex.phpにて実行する場合、action属性はindex.phpまたは""空でもOK -->
+  <input type="text" name="message">
+  <button>Post</button>
+  <input type="hidden" name="token" value="<?= h($_SESSION["token"]); ?>">
 </form>
 
   <?php include("../app/_parts/_footer.php");
